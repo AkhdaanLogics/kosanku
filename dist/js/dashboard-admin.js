@@ -1,4 +1,29 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const sections = {
+    dashboard: document.getElementById("dashboard-content"),
+    kamar: document.getElementById("data-kamar-content"),
+    penyewa: document.getElementById("penyewa-content"),
+    pembayaran: document.getElementById("pembayaran-content"),
+  };
+
+  function showSection(sectionName) {
+    Object.values(sections).forEach((sec) => sec.classList.add("hidden"));
+    sections[sectionName].classList.remove("hidden");
+  }
+
+  document
+    .getElementById("menu-dashboard")
+    .addEventListener("click", () => showSection("dashboard"));
+  document
+    .getElementById("menu-kamar")
+    .addEventListener("click", () => showSection("kamar"));
+  document
+    .getElementById("menu-penyewa")
+    .addEventListener("click", () => showSection("penyewa"));
+  document
+    .getElementById("menu-pembayaran")
+    .addEventListener("click", () => showSection("pembayaran"));
+
   const occupancyCtx = document
     .getElementById("occupancyChart")
     .getContext("2d");
@@ -125,30 +150,218 @@ document.addEventListener("DOMContentLoaded", function () {
       },
     },
   });
-});
-document.addEventListener("DOMContentLoaded", () => {
-  const sections = {
-    dashboard: document.getElementById("dashboard-content"),
-    kamar: document.getElementById("data-kamar-content"),
-    penyewa: document.getElementById("penyewa-content"),
-    pembayaran: document.getElementById("pembayaran-content"),
-  };
+  const roomData = [
+    {
+      id: 1,
+      number: "101",
+      type: "Tipe A",
+      status: "empty",
+      description:
+        "Kamar dengan fasilitas AC, kamar mandi dalam, dan free WiFi.",
+      price: 800000,
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 2,
+      number: "102",
+      type: "Tipe A",
+      status: "empty",
+      description:
+        "Kamar dengan fasilitas AC, kamar mandi dalam, dan free WiFi.",
+      price: 800000,
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 3,
+      number: "103",
+      type: "Tipe B",
+      status: "occupied",
+      description:
+        "Kamar dengan fasilitas kipas angin, kamar mandi dalam, dan free WiFi.",
+      price: 650000,
+      tenant: {
+        name: "Putra",
+        startDate: "1 Mar 2023",
+        paymentStatus: "Lunas",
+      },
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 4,
+      number: "201",
+      type: "Tipe Premium",
+      status: "occupied",
+      description:
+        "Kamar dengan fasilitas AC, TV, kamar mandi dalam, dan free WiFi.",
+      price: 1200000,
+      tenant: {
+        name: "Budi",
+        startDate: "15 Feb 2023",
+        paymentStatus: "Belum Lunas",
+      },
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 5,
+      number: "202",
+      type: "Tipe Premium",
+      status: "empty",
+      description:
+        "Kamar dengan fasilitas AC, TV, kamar mandi dalam, dan free WiFi.",
+      price: 1200000,
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 6,
+      number: "203",
+      type: "Tipe C",
+      status: "occupied",
+      description:
+        "Kamar dengan fasilitas kipas angin dan kamar mandi bersama.",
+      price: 500000,
+      tenant: {
+        name: "Indah",
+        startDate: "1 Jan 2023",
+        paymentStatus: "Lunas",
+      },
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 6,
+      number: "203",
+      type: "Tipe C",
+      status: "occupied",
+      description:
+        "Kamar dengan fasilitas kipas angin dan kamar mandi bersama.",
+      price: 500000,
+      tenant: {
+        name: "Indah",
+        startDate: "1 Jan 2023",
+        paymentStatus: "Lunas",
+      },
+      image: "./assets/hotel.jpg",
+    },
+    {
+      id: 6,
+      number: "203",
+      type: "Tipe C",
+      status: "empty",
+      description:
+        "Kamar dengan fasilitas kipas angin dan kamar mandi bersama.",
+      price: 500000,
+      tenant: {
+        name: "Indah",
+        startDate: "1 Jan 2023",
+        paymentStatus: "Lunas",
+      },
+      image: "./assets/hotel.jpg",
+    },
+  ];
 
-  function showSection(sectionName) {
-    Object.values(sections).forEach((sec) => sec.classList.add("hidden"));
-    sections[sectionName].classList.remove("hidden");
+  function initializeRoomsDisplay() {
+    const emptyRoomsContainer = document.getElementById(
+      "empty-rooms-container"
+    );
+    const occupiedRoomsContainer = document.getElementById(
+      "occupied-rooms-container"
+    );
+    const emptyRoomsTemplate = document.getElementById("empty-room-template");
+    const occupiedRoomsTemplate = document.getElementById(
+      "occupied-room-template"
+    );
+
+    emptyRoomsContainer.innerHTML = "";
+    occupiedRoomsContainer.innerHTML = "";
+
+    const emptyRooms = roomData.filter((room) => room.status === "empty");
+    const occupiedRooms = roomData.filter((room) => room.status === "occupied");
+
+    document.getElementById("empty-rooms-count").textContent =
+      emptyRooms.length;
+    document.getElementById("occupied-rooms-count").textContent =
+      occupiedRooms.length;
+
+    emptyRooms.forEach((room) => {
+      const roomElement = emptyRoomsTemplate.content.cloneNode(true);
+
+      roomElement.querySelector(
+        ".room-number"
+      ).textContent = `Kamar ${room.number}`;
+      roomElement.querySelector(".room-type").textContent = room.type;
+      roomElement.querySelector(".room-description").textContent =
+        room.description;
+      roomElement.querySelector(".room-price").textContent = formatPrice(
+        room.price
+      );
+
+      if (room.image) {
+        roomElement.querySelector(
+          ".room-bg"
+        ).style.backgroundImage = `url('${room.image}')`;
+      }
+
+      emptyRoomsContainer.appendChild(roomElement);
+    });
+
+    occupiedRooms.forEach((room) => {
+      const roomElement = occupiedRoomsTemplate.content.cloneNode(true);
+
+      const roomNumberElements = roomElement.querySelectorAll(".room-number");
+      roomNumberElements.forEach(
+        (el) => (el.textContent = `Kamar ${room.number}`)
+      );
+
+      roomElement.querySelector(".room-type").textContent = room.type;
+
+      const tenantNameElements = roomElement.querySelectorAll(".tenant-name");
+      tenantNameElements.forEach((el) => (el.textContent = room.tenant.name));
+
+      roomElement.querySelector(".tenant-start-date").textContent =
+        room.tenant.startDate;
+
+      const paymentStatusElement = roomElement.querySelector(".payment-status");
+      paymentStatusElement.textContent = room.tenant.paymentStatus;
+
+      if (room.tenant.paymentStatus === "Lunas") {
+        paymentStatusElement.classList.remove(
+          "text-yellow-600",
+          "text-red-600"
+        );
+        paymentStatusElement.classList.add("text-green-600");
+      } else if (room.tenant.paymentStatus === "Belum Lunas") {
+        paymentStatusElement.classList.remove("text-green-600", "text-red-600");
+        paymentStatusElement.classList.add("text-yellow-600");
+      } else if (room.tenant.paymentStatus === "Terlambat") {
+        paymentStatusElement.classList.remove(
+          "text-green-600",
+          "text-yellow-600"
+        );
+        paymentStatusElement.classList.add("text-red-600");
+      }
+
+      if (room.image) {
+        roomElement.querySelector(
+          ".room-bg"
+        ).style.backgroundImage = `url('${room.image}')`;
+      }
+
+      occupiedRoomsContainer.appendChild(roomElement);
+    });
+
+    document.querySelectorAll(".room-card").forEach((card) => {
+      card.addEventListener("click", function () {
+        const roomNumber = this.querySelector(".room-number").textContent;
+        console.log(`Clicked on ${roomNumber}`);
+        alert(`Detail untuk ${roomNumber} akan ditampilkan`);
+      });
+    });
   }
 
-  document
-    .getElementById("menu-dashboard")
-    .addEventListener("click", () => showSection("dashboard"));
-  document
-    .getElementById("menu-kamar")
-    .addEventListener("click", () => showSection("kamar"));
-  document
-    .getElementById("menu-penyewa")
-    .addEventListener("click", () => showSection("penyewa"));
-  document
-    .getElementById("menu-pembayaran")
-    .addEventListener("click", () => showSection("pembayaran"));
+  function formatPrice(price) {
+    return new Intl.NumberFormat("id-ID").format(price);
+  }
+
+  document.getElementById("menu-kamar").addEventListener("click", function () {
+    initializeRoomsDisplay();
+  });
 });

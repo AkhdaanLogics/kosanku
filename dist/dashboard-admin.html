@@ -10,7 +10,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css"
     />
     <link rel="stylesheet" href="./style/font.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   </head>
   <body class="bg-[#f5f6fa]">
     <nav
@@ -88,7 +88,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
           <div class="bg-white rounded-lg shadow p-4">
             <h2 class="text-lg font-bold mb-4 text-gray-800">
-              Status Okupansi Kamar
+              Status Kamar
             </h2>
             <div class="aspect-w-16 aspect-h-9">
               <canvas id="occupancyChart"></canvas>
@@ -108,7 +108,7 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div class="bg-white rounded-lg shadow p-4">
             <h2 class="text-lg font-bold mb-4 text-gray-800">
-              Distribusi Tipe Kamar
+              Tipe Kamar
             </h2>
             <div class="aspect-w-16 aspect-h-9">
               <canvas id="roomTypeChart"></canvas>
@@ -128,26 +128,160 @@
 
       <!-- Data Kamar -->
       <div id="data-kamar-content" class="content-section hidden">
-        <h2 class="text-xl font-semibold mb-10">Data Kamar</h2>
-        <a href="#">
-          <div
-            class="relative grid h-[10rem] w-[20rem] flex-col items-end justify-center overflow-hidden rounded-lg bg-white"
-          >
-            <div
-              class="absolute inset-0 m-0 h-full w-full overflow-hidden rounded-none bg-transparent bg-[url(./assets/hotel.jpg)] bg-cover bg-center"
-            >
-              <div
-                class="to-bg-black-10 absolute inset-0 h-full w-full bg-gradient-to-t from-black/80 via-black/50"
-              ></div>
+          <h2 class="text-xl font-semibold mb-6">Data Kamar</h2>
+
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-800">Kamar Kosong</h3>
+              <span
+                class="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium"
+              >
+                <span id="empty-rooms-count">0</span> Kamar
+              </span>
             </div>
-            <div class="relative text-center p-6 px-6 py-14 md:px-12">
-              <h5 class="mb-4 text-xl font-semibold text-slate-300">
-                Kamar 1A
-              </h5>
+
+            <div
+              id="empty-rooms-container"
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            >
             </div>
           </div>
-        </a>
-      </div>
+          <button
+          id="toggle-kamar-kosong"
+          class="mt-4 mb-4 px-4 py-2 w-full bg-white text-black rounded hover:bg-gray-300 shadow-2xl"
+          >
+            Tampilkan Semua
+          </button>
+
+          <div>
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-medium text-gray-800">Kamar Terpakai</h3>
+              <span
+                class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
+              >
+                <span id="occupied-rooms-count">0</span> Kamar
+              </span>
+            </div>
+
+            <div
+              id="occupied-rooms-container"
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
+            >
+             
+            </div>
+          </div>
+          <button
+            id="toggle-kamar-terpakai"
+            class="mt-4 px-4 py-2 w-full bg-white text-black rounded hover:bg-gray-300 shadow-2xl"
+          >
+            Tampilkan Semua
+          </button>
+        </div>
+
+
+        <!-- Card -->
+        <template id="empty-room-template">
+          <div
+            class="room-card relative h-48 w-full rounded-lg bg-white shadow-md overflow-hidden cursor-pointer group transition-all duration-300"
+          >
+            <div
+              class="room-bg absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-300"
+              style="background-image: url('./assets/hotel.jpg')"
+            >
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
+              ></div>
+            </div>
+
+            <!-- Tampilan Depan (Kamar Kosong) -->
+            <div
+              class="front-content absolute inset-0 flex flex-col justify-end p-4 text-white z-10"
+            >
+              <h4 class="text-xl font-semibold room-number">Kamar 101</h4>
+              <p class="text-sm text-slate-300 room-type">Tipe A</p>
+            </div>
+
+            <!-- Setelah di Hover (Kamar Kosong) -->
+            <div
+              class="back-content absolute inset-0 flex flex-col justify-center items-center p-4 bg-white transform translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20"
+            >
+              <h4 class="text-lg font-semibold text-gray-800 room-number">
+                Kamar 101
+              </h4>
+              <p class="text-sm text-gray-600 mt-1 room-type">Tipe A</p>
+              <div class="mt-3 text-sm text-gray-700 room-description">
+                Kamar dengan fasilitas AC, kamar mandi dalam, dan free WiFi.
+              </div>
+              <div class="mt-4 text-sm font-semibold text-gray-900">
+                Rp <span class="room-price">800.000</span>/bulan
+              </div>
+            </div>
+        </template>
+
+        <!-- Card -->
+        <template id="occupied-room-template">
+          <div
+            class="room-card relative h-48 w-full rounded-lg bg-white shadow-md overflow-hidden cursor-pointer group transition-all duration-300"
+          >
+            <div
+              class="room-bg absolute inset-0 w-full h-full bg-cover bg-center transition-all duration-300"
+              style="background-image: url('./assets/hotel.jpg')"
+            >
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent"
+              ></div>
+            </div>
+
+            <!-- Tampilan Depan (Kamar Terpakai)-->
+            <div
+              class="front-content absolute inset-0 flex flex-col justify-end p-4 text-white z-10"
+            >
+              <h4 class="text-xl font-semibold room-number">Kamar 101</h4>
+              <div class="flex items-center mt-1">
+                <i class="bi bi-person-fill mr-1"></i>
+                <p class="text-sm text-slate-300 tenant-name">Nama Penyewa</p>
+              </div>
+            </div>
+
+            <!-- Setelah di Hover (Kamar Terpakai)-->
+            <div
+              class="back-content absolute inset-0 flex flex-col justify-center items-center p-4 bg-white opacity-0 transform translate-y-full group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 z-20"
+            >
+              <h4 class="text-lg font-semibold text-gray-800 room-number">
+                Kamar 101
+              </h4>
+              <p class="text-sm text-gray-600 mt-1 room-type">Tipe A</p>
+              <div class="mt-3 w-full">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-gray-600">Penyewa:</span>
+                  <span class="font-medium text-gray-900 tenant-name"
+                    >Nama Penyewa</span
+                  >
+                </div>
+                <div class="flex items-center justify-between mt-1 text-sm">
+                  <span class="text-gray-600">Mulai Sewa:</span>
+                  <span class="font-medium text-gray-900 tenant-start-date"
+                    >1 Jan 2023</span
+                  >
+                </div>
+                <div class="flex items-center justify-between mt-1 text-sm">
+                  <span class="text-gray-600">Status:</span>
+                  <span class="font-medium text-green-600 payment-status"
+                    >Lunas</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="fixed bottom-4 right-4">
+            <button
+              id="add-room-button"
+              class="bg-black cursor-pointer text-white px-4 py-3 rounded-full shadow-lg hover:bg-gray-800 transition duration-300"
+            >
+              <i class="bi bi-plus"></i>
+            </button>
+          </div>
+        </template>
 
       <!-- Data Penyewa -->
       <div id="penyewa-content" class="content-section hidden">
@@ -188,6 +322,14 @@
             </tbody>
           </table>
         </div>
+        <div class="fixed bottom-4 right-4">
+          <button
+            id="add-room-button"
+            class="bg-black cursor-pointer text-white px-4 py-3 rounded-full shadow-lg hover:bg-gray-800 transition duration-300"
+          >
+            <i class="bi bi-plus"></i>
+          </button>
+        </div>
       </div>
 
       <!-- Data Pembayaran -->
@@ -224,6 +366,6 @@
         </div>
       </div>
     </main>
-    <script src="./js/dashboard-admin.js"></script>
   </body>
+  <script src="./js/dashboard-admin.js""></script>
 </html>
