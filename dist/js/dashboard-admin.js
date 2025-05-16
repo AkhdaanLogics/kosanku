@@ -1,28 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
   const sections = {
     dashboard: document.getElementById("dashboard-content"),
-    kamar: document.getElementById("data-kamar-content"),
-    penyewa: document.getElementById("penyewa-content"),
+    listKamar: document.getElementById("data-kamar-content"),
+    tambahKamar: document.getElementById("tambah-kamar-content"),
+    listPenyewa: document.getElementById("penyewa-content"),
+    tambahPenyewa: document.getElementById("tambah-penyewa-content"),
     pembayaran: document.getElementById("pembayaran-content"),
   };
 
   function showSection(sectionName) {
-    Object.values(sections).forEach((sec) => sec.classList.add("hidden"));
-    sections[sectionName].classList.remove("hidden");
+    Object.values(sections).forEach((sec) => {
+      if (sec) sec.classList.add("hidden");
+    });
+    if (sections[sectionName]) {
+      sections[sectionName].classList.remove("hidden");
+    }
   }
 
+  // Event listeners untuk menu utama
   document
     .getElementById("menu-dashboard")
     .addEventListener("click", () => showSection("dashboard"));
   document
-    .getElementById("menu-kamar")
-    .addEventListener("click", () => showSection("kamar"));
-  document
-    .getElementById("menu-penyewa")
-    .addEventListener("click", () => showSection("penyewa"));
-  document
     .getElementById("menu-pembayaran")
     .addEventListener("click", () => showSection("pembayaran"));
+
+  // Event listeners untuk submenu Data Kamar
+  document.getElementById("menu-list-kamar").addEventListener("click", () => {
+    showSection("listKamar");
+    initializeRoomsDisplay();
+  });
+
+  document
+    .getElementById("menu-tambah-kamar")
+    .addEventListener("click", () => showSection("tambahKamar"));
+
+  // Event listeners untuk submenu Penyewa
+  document
+    .getElementById("menu-list-penyewa")
+    .addEventListener("click", () => showSection("listPenyewa"));
+  document
+    .getElementById("menu-tambah-penyewa")
+    .addEventListener("click", () => showSection("tambahPenyewa"));
 
   const occupancyCtx = document
     .getElementById("occupancyChart")
